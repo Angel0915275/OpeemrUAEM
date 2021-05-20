@@ -1,0 +1,800 @@
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md0}{}\doxysubsubsection{Goal}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md0}
+This project aims to provide an easy-\/to-\/use JSON-\/based REST API for \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}}\textquotesingle{}s most common functions. All code will be done in classes and separate from the view to help with codebase modernization efforts.\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md1}{}\doxysubsubsection{Team}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md1}
+
+\begin{DoxyItemize}
+\item \href{https://github.com/matthewvita}{\texttt{ @matthewvita}}
+\item \href{https://github.com/sjpadgett}{\texttt{ @sjpadgett}}
+\item \href{https://github.com/juggernautsei}{\texttt{ @juggernautsei}}
+\item \href{https://github.com/kofiav}{\texttt{ @kofiav}}
+\item \href{https://github.com/bradymiller}{\texttt{ @bradymiller}}
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md2}{}\doxysubsubsection{Prerequsite}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md2}
+Enable this API service in \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} menu\+: Administration-\/$>$Globals-\/$>$Connectors-\/$>$\char`\"{}\+Enable Open\+EMR REST API\char`\"{}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md3}{}\doxysubsubsection{Using API Internally}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md3}
+There are several ways to make API calls from an authorized session and maintain security\+:
+\begin{DoxyItemize}
+\item See the script at tests/api/\+Internal\+Api\+Test.\+php for examples of internal API use cases.
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md4}{}\doxysubsubsection{Endpoints}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md4}
+Note\+: FHIR endpoints follow normal FHIR REST endpoints. Use {\ttfamily \href{https://domain/apis/fhir}{\texttt{ https\+://domain/apis/fhir}} as base URI.}
+
+{\itshape Example\+:} {\ttfamily \href{https://domain/apis/fhir/Patient}{\texttt{ https\+://domain/apis/fhir/\+Patient}}} returns a Patients bundle resource and etc..\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md5}{}\doxyparagraph{POST /api/auth}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md5}
+Obtain an API token with your login (returns an API token). For FHIR replace Uri component \textquotesingle{}api\textquotesingle{} with \textquotesingle{}fhir\textquotesingle{}\+: Scope must match a site that has been setup in \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} in the /sites/ directory. If you haven\textquotesingle{}t created additional sites then \textquotesingle{}default\textquotesingle{} should be the scope.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST -\/H 'Content-\/Type: application/json' 'https://localhost:8300/apis/api/auth' \(\backslash\)}
+\DoxyCodeLine{-\/d '\{}
+\DoxyCodeLine{    "{}grant\_type"{}:"{}password"{},}
+\DoxyCodeLine{    "{}username"{}: "{}ServiceUser"{},}
+\DoxyCodeLine{    "{}password"{}: "{}password"{},}
+\DoxyCodeLine{    "{}scope"{}:"{}site id"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+ Response\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{"{}token\_type"{}:"{}Bearer"{},}
+\DoxyCodeLine{"{}access\_token"{}:"{}d2870cb522230dbb8946b2f47d2c7e6664656661756c74"{},}
+\DoxyCodeLine{"{}expires\_in"{}:"{}3600"{}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ Each call must include the token\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/medical\_problem' \(\backslash\)}
+\DoxyCodeLine{  -\/H 'Authorization: Bearer d2870cb522230dbb8946b2f47d2c7e6664656661756c74'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md6}{}\doxyparagraph{POST /api/facility}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md6}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/facility' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}name"{}: "{}Aquaria"{},}
+\DoxyCodeLine{    "{}phone"{}: "{}808-\/606-\/3030"{},}
+\DoxyCodeLine{    "{}fax"{}: "{}808-\/606-\/3031"{},}
+\DoxyCodeLine{    "{}street"{}: "{}1337 Bit Shifter Ln"{},}
+\DoxyCodeLine{    "{}city"{}: "{}San Lorenzo"{},}
+\DoxyCodeLine{    "{}state"{}: "{}ZZ"{},}
+\DoxyCodeLine{    "{}postal\_code"{}: "{}54321"{},}
+\DoxyCodeLine{    "{}email"{}: "{}foo@bar.com"{},}
+\DoxyCodeLine{    "{}service\_location"{}: "{}1"{},}
+\DoxyCodeLine{    "{}billing\_location"{}: "{}1"{},}
+\DoxyCodeLine{    "{}color"{}: "{}\#FF69B4"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md7}{}\doxyparagraph{PUT /api/facility/\+:fid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md7}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/facility/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}name"{}: "{}Aquaria"{},}
+\DoxyCodeLine{    "{}phone"{}: "{}808-\/606-\/3030"{},}
+\DoxyCodeLine{    "{}fax"{}: "{}808-\/606-\/3031"{},}
+\DoxyCodeLine{    "{}street"{}: "{}1337 Bit Shifter Ln"{},}
+\DoxyCodeLine{    "{}city"{}: "{}San Lorenzo"{},}
+\DoxyCodeLine{    "{}state"{}: "{}AZ"{},}
+\DoxyCodeLine{    "{}postal\_code"{}: "{}54321"{},}
+\DoxyCodeLine{    "{}email"{}: "{}foo@bar.com"{},}
+\DoxyCodeLine{    "{}service\_location"{}: "{}1"{},}
+\DoxyCodeLine{    "{}billing\_location"{}: "{}1"{},}
+\DoxyCodeLine{    "{}color"{}: "{}\#FF69B4"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md8}{}\doxyparagraph{GET /api/facility}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md8}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/facility'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md9}{}\doxyparagraph{GET /api/facility/\+:fid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md9}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/facility/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md10}{}\doxyparagraph{GET /api/provider}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md10}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/provider'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md11}{}\doxyparagraph{GET /api/provider/\+:prid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md11}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/provider/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md12}{}\doxyparagraph{POST /api/patient}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md12}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Mr"{},}
+\DoxyCodeLine{    "{}fname"{}: "{}Foo"{},}
+\DoxyCodeLine{    "{}mname"{}: "{}"{},}
+\DoxyCodeLine{    "{}lname"{}: "{}Bar"{},}
+\DoxyCodeLine{    "{}street"{}: "{}456 Tree Lane"{},}
+\DoxyCodeLine{    "{}postal\_code"{}: "{}08642"{},}
+\DoxyCodeLine{    "{}city"{}: "{}FooTown"{},}
+\DoxyCodeLine{    "{}state"{}: "{}FL"{},}
+\DoxyCodeLine{    "{}country\_code"{}: "{}US"{},}
+\DoxyCodeLine{    "{}phone\_contact"{}: "{}123-\/456-\/7890"{},}
+\DoxyCodeLine{    "{}dob"{}: "{}1992-\/02-\/02"{},}
+\DoxyCodeLine{    "{}sex"{}: "{}Male"{},}
+\DoxyCodeLine{    "{}race"{}: "{}"{},}
+\DoxyCodeLine{    "{}ethnicity"{}: "{}"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md13}{}\doxyparagraph{PUT /api/patient/\+:pid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md13}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Mr"{},}
+\DoxyCodeLine{    "{}fname"{}: "{}Baz"{},}
+\DoxyCodeLine{    "{}mname"{}: "{}"{},}
+\DoxyCodeLine{    "{}lname"{}: "{}Bop"{},}
+\DoxyCodeLine{    "{}street"{}: "{}456 Tree Lane"{},}
+\DoxyCodeLine{    "{}postal\_code"{}: "{}08642"{},}
+\DoxyCodeLine{    "{}city"{}: "{}FooTown"{},}
+\DoxyCodeLine{    "{}state"{}: "{}FL"{},}
+\DoxyCodeLine{    "{}country\_code"{}: "{}US"{},}
+\DoxyCodeLine{    "{}phone\_contact"{}: "{}123-\/456-\/7890"{},}
+\DoxyCodeLine{    "{}dob"{}: "{}1992-\/02-\/03"{},}
+\DoxyCodeLine{    "{}sex"{}: "{}Male"{},}
+\DoxyCodeLine{    "{}race"{}: "{}"{},}
+\DoxyCodeLine{    "{}ethnicity"{}: "{}"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md14}{}\doxyparagraph{GET /api/patient}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md14}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient'}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient\&fname=...\&lname=...\&dob=...'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md15}{}\doxyparagraph{GET /api/patient/\+:pid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md15}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md16}{}\doxyparagraph{GET /api/patient/\+:pid/encounter}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md16}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/encounter'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md17}{}\doxyparagraph{GET /api/patient/\+:pid/encounter/\+:eid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md17}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/encounter/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md18}{}\doxyparagraph{POST /api/patient/\+:pid/encounter/\+:eid/vital}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md18}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/encounter/1/vital' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}bps"{}: "{}130"{},}
+\DoxyCodeLine{    "{}bpd"{}: "{}80"{},}
+\DoxyCodeLine{    "{}weight"{}: "{}220"{},}
+\DoxyCodeLine{    "{}height"{}: "{}70"{},}
+\DoxyCodeLine{    "{}temperature"{}: "{}98"{},}
+\DoxyCodeLine{    "{}temp\_method"{}: "{}Oral"{},}
+\DoxyCodeLine{    "{}pulse"{}: "{}60"{},}
+\DoxyCodeLine{    "{}respiration"{}: "{}20"{},}
+\DoxyCodeLine{    "{}note"{}: "{}..."{},}
+\DoxyCodeLine{    "{}waist\_circ"{}: "{}37"{},}
+\DoxyCodeLine{    "{}head\_circ"{}: "{}22.2"{},}
+\DoxyCodeLine{    "{}oxygen\_saturation"{}: "{}80"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md19}{}\doxyparagraph{PUT /api/patient/\+:pid/encounter/\+:eid/vital/\+:vid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md19}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/encounter/1/vital/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}bps"{}: "{}140"{},}
+\DoxyCodeLine{    "{}bpd"{}: "{}80"{},}
+\DoxyCodeLine{    "{}weight"{}: "{}220"{},}
+\DoxyCodeLine{    "{}height"{}: "{}70"{},}
+\DoxyCodeLine{    "{}temperature"{}: "{}98"{},}
+\DoxyCodeLine{    "{}temp\_method"{}: "{}Oral"{},}
+\DoxyCodeLine{    "{}pulse"{}: "{}60"{},}
+\DoxyCodeLine{    "{}respiration"{}: "{}20"{},}
+\DoxyCodeLine{    "{}note"{}: "{}..."{},}
+\DoxyCodeLine{    "{}waist\_circ"{}: "{}37"{},}
+\DoxyCodeLine{    "{}head\_circ"{}: "{}22.2"{},}
+\DoxyCodeLine{    "{}oxygen\_saturation"{}: "{}80"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md20}{}\doxyparagraph{GET /api/patient/\+:pid/encounter/\+:eid/vital}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md20}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/encounter/1/vital'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md21}{}\doxyparagraph{GET /api/patient/\+:pid/encounter/\+:eid/vital/\+:vid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md21}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/encounter/1/vital/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md22}{}\doxyparagraph{POST /api/patient/\+:pid/encounter/\+:eid/soap\+\_\+note}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md22}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/encounter/1/soap\_note' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}subjective"{}: "{}..."{},}
+\DoxyCodeLine{    "{}objective"{}: "{}..."{},}
+\DoxyCodeLine{    "{}assessment"{}: "{}..."{},}
+\DoxyCodeLine{    "{}plan"{}: "{}..."{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md23}{}\doxyparagraph{PUT /api/patient/\+:pid/encounter/\+:eid/soap\+\_\+note/\+:sid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md23}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/encounter/1/soap\_note/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}subjective"{}: "{}..."{},}
+\DoxyCodeLine{    "{}objective"{}: "{}..."{},}
+\DoxyCodeLine{    "{}assessment"{}: "{}..."{},}
+\DoxyCodeLine{    "{}plan"{}: "{}..."{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md24}{}\doxyparagraph{GET /api/patient/\+:pid/encounter/\+:eid/soap\+\_\+note}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md24}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/encounter/1/soap\_note'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md25}{}\doxyparagraph{GET /api/patient/\+:pid/encounter/\+:eid/soap\+\_\+note/\+:sid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md25}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/encounter/1/soap\_note/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md26}{}\doxyparagraph{POST /api/patient/\+:pid/medical\+\_\+problem}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md26}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/medical\_problem' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Dermatochalasis"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2010-\/04-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: null,}
+\DoxyCodeLine{    "{}diagnosis"{}: "{}ICD10:H02.839"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md27}{}\doxyparagraph{PUT /api/patient/\+:pid/medical\+\_\+problem/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md27}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/medical\_problem/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Dermatochalasis"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2010-\/04-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: "{}2018-\/03-\/12"{},}
+\DoxyCodeLine{    "{}diagnosis"{}: "{}ICD10:H02.839"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md28}{}\doxyparagraph{GET /api/patient/\+:pid/medical\+\_\+problem}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md28}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/medical\_problem'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md29}{}\doxyparagraph{GET /api/patient/\+:pid/medical\+\_\+problem/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md29}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/medical\_problem/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md30}{}\doxyparagraph{DELETE /api/patient/\+:pid/medical\+\_\+problem/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md30}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/medical\_problem/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md31}{}\doxyparagraph{POST /api/patient/\+:pid/allergy}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md31}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/allergy' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Iodine"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2010-\/10-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: null}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md32}{}\doxyparagraph{PUT /api/patient/\+:pid/allergy/\+:aid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md32}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/allergy/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Iodine"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2012-\/10-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: null}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md33}{}\doxyparagraph{GET /api/patient/\+:pid/allergy}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md33}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/allergy'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md34}{}\doxyparagraph{GET /api/patient/\+:pid/allergy/\+:aid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md34}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/allergy/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md35}{}\doxyparagraph{DELETE /api/patient/\+:pid/allergy/\+:aid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md35}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/allergy/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md36}{}\doxyparagraph{POST /api/patient/\+:pid/medication}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md36}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/medication' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Norvasc"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2013-\/10-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: null}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md37}{}\doxyparagraph{PUT /api/patient/\+:pid/medication/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md37}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/medication/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Norvasc"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2013-\/04-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: null}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md38}{}\doxyparagraph{GET /api/patient/\+:pid/medication}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md38}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/medication'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md39}{}\doxyparagraph{GET /api/patient/\+:pid/medication/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md39}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/medication/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md40}{}\doxyparagraph{DELETE /api/patient/\+:pid/medication/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md40}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/medication/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md41}{}\doxyparagraph{POST /api/patient/\+:pid/surgery}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md41}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/surgery' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Blepharoplasty"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2013-\/10-\/13"{},}
+\DoxyCodeLine{    "{}enddate"{}: null,}
+\DoxyCodeLine{    "{}diagnosis"{}: "{}CPT4:15823-\/50"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md42}{}\doxyparagraph{PUT /api/patient/\+:pid/surgery/\+:sid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md42}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/surgery/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Blepharoplasty"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2013-\/10-\/14"{},}
+\DoxyCodeLine{    "{}enddate"{}: null,}
+\DoxyCodeLine{    "{}diagnosis"{}: "{}CPT4:15823-\/50"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md43}{}\doxyparagraph{GET /api/patient/\+:pid/surgery}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md43}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/surgery'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md44}{}\doxyparagraph{GET /api/patient/\+:pid/surgery/\+:sid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md44}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/surgery/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md45}{}\doxyparagraph{DELETE /api/patient/\+:pid/surgery/\+:sid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md45}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/surgery/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md46}{}\doxyparagraph{POST /api/patient/\+:pid/dental\+\_\+issue}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md46}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/dental\_issue' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Halitosis"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2015-\/03-\/17"{},}
+\DoxyCodeLine{    "{}enddate"{}: null}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md47}{}\doxyparagraph{PUT /api/patient/\+:pid/dental\+\_\+issue/\+:did}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md47}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/dental\_issue/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}title"{}: "{}Halitosis"{},}
+\DoxyCodeLine{    "{}begdate"{}: "{}2015-\/03-\/17"{},}
+\DoxyCodeLine{    "{}enddate"{}: "{}2018-\/03-\/20"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md48}{}\doxyparagraph{GET /api/patient/\+:pid/dental\+\_\+issue}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md48}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/dental\_issue'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md49}{}\doxyparagraph{GET /api/patient/\+:pid/dental\+\_\+issue/\+:did}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md49}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/dental\_issue/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md50}{}\doxyparagraph{DELETE /api/patient/\+:pid/dental\+\_\+issue/\+:did}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md50}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/dental\_issue/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md51}{}\doxyparagraph{GET /api/patient/\+:pid/insurance}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md51}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/insurance'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md52}{}\doxyparagraph{GET /api/patient/\+:pid/insurance/\+:type}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md52}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/insurance/secondary'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md53}{}\doxyparagraph{POST /api/patient/\+:pid/insurance/\+:type}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md53}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/10/insurance/primary' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}type"{}: "{}primary"{},}
+\DoxyCodeLine{    "{}provider"{}: "{}33"{},}
+\DoxyCodeLine{    "{}plan\_name"{}: "{}Some Plan"{},}
+\DoxyCodeLine{    "{}policy\_number"{}: "{}12345"{},}
+\DoxyCodeLine{    "{}group\_number"{}: "{}252412"{},}
+\DoxyCodeLine{    "{}subscriber\_lname"{}: "{}Tester"{},}
+\DoxyCodeLine{    "{}subscriber\_mname"{}: "{}Xi"{},}
+\DoxyCodeLine{    "{}subscriber\_fname"{}: "{}Foo"{},}
+\DoxyCodeLine{    "{}subscriber\_relationship"{}: "{}other"{},}
+\DoxyCodeLine{    "{}subscriber\_ss"{}: "{}234231234"{},}
+\DoxyCodeLine{    "{}subscriber\_DOB"{}: "{}2018-\/10-\/03"{},}
+\DoxyCodeLine{    "{}subscriber\_street"{}: "{}183 Cool St"{},}
+\DoxyCodeLine{    "{}subscriber\_postal\_code"{}: "{}23418"{},}
+\DoxyCodeLine{    "{}subscriber\_city"{}: "{}Cooltown"{},}
+\DoxyCodeLine{    "{}subscriber\_state"{}: "{}AZ"{},}
+\DoxyCodeLine{    "{}subscriber\_country"{}: "{}USA"{},}
+\DoxyCodeLine{    "{}subscriber\_phone"{}: "{}234-\/598-\/2123"{},}
+\DoxyCodeLine{    "{}subscriber\_employer"{}: "{}Some Employer"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_street"{}: "{}123 Heather Lane"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_postal\_code"{}: "{}23415"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_state"{}: "{}AZ"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_country"{}: "{}USA"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_city"{}: "{}Cooltown"{},}
+\DoxyCodeLine{    "{}copay"{}: "{}35"{},}
+\DoxyCodeLine{    "{}date"{}: "{}2018-\/10-\/15"{},}
+\DoxyCodeLine{    "{}subscriber\_sex"{}: "{}Female"{},}
+\DoxyCodeLine{    "{}accept\_assignment"{}: "{}TRUE"{},}
+\DoxyCodeLine{    "{}policy\_type"{}: "{}a"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+
+
+Notes\+:
+\begin{DoxyItemize}
+\item {\ttfamily provider} is the insurance company id
+\item {\ttfamily state} can be found by querying {\ttfamily resource=/api/list/state}
+\item {\ttfamily country} can be found by querying {\ttfamily resource=/api/list/country}
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md54}{}\doxyparagraph{PUT /api/patient/\+:pid/insurance/\+:type}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md54}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/10/insurance/primary' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}type"{}: "{}primary"{},}
+\DoxyCodeLine{    "{}provider"{}: "{}33"{},}
+\DoxyCodeLine{    "{}plan\_name"{}: "{}Some Plan"{},}
+\DoxyCodeLine{    "{}policy\_number"{}: "{}12345"{},}
+\DoxyCodeLine{    "{}group\_number"{}: "{}252412"{},}
+\DoxyCodeLine{    "{}subscriber\_lname"{}: "{}Tester"{},}
+\DoxyCodeLine{    "{}subscriber\_mname"{}: "{}Xi"{},}
+\DoxyCodeLine{    "{}subscriber\_fname"{}: "{}Foo"{},}
+\DoxyCodeLine{    "{}subscriber\_relationship"{}: "{}other"{},}
+\DoxyCodeLine{    "{}subscriber\_ss"{}: "{}234231234"{},}
+\DoxyCodeLine{    "{}subscriber\_DOB"{}: "{}2018-\/10-\/03"{},}
+\DoxyCodeLine{    "{}subscriber\_street"{}: "{}183 Cool St"{},}
+\DoxyCodeLine{    "{}subscriber\_postal\_code"{}: "{}23418"{},}
+\DoxyCodeLine{    "{}subscriber\_city"{}: "{}Cooltown"{},}
+\DoxyCodeLine{    "{}subscriber\_state"{}: "{}AZ"{},}
+\DoxyCodeLine{    "{}subscriber\_country"{}: "{}USA"{},}
+\DoxyCodeLine{    "{}subscriber\_phone"{}: "{}234-\/598-\/2123"{},}
+\DoxyCodeLine{    "{}subscriber\_employer"{}: "{}Some Employer"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_street"{}: "{}123 Heather Lane"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_postal\_code"{}: "{}23415"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_state"{}: "{}AZ"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_country"{}: "{}USA"{},}
+\DoxyCodeLine{    "{}subscriber\_employer\_city"{}: "{}Cooltown"{},}
+\DoxyCodeLine{    "{}copay"{}: "{}35"{},}
+\DoxyCodeLine{    "{}date"{}: "{}2018-\/10-\/15"{},}
+\DoxyCodeLine{    "{}subscriber\_sex"{}: "{}Female"{},}
+\DoxyCodeLine{    "{}accept\_assignment"{}: "{}TRUE"{},}
+\DoxyCodeLine{    "{}policy\_type"{}: "{}a"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+
+
+Notes\+:
+\begin{DoxyItemize}
+\item {\ttfamily provider} is the insurance company id
+\item {\ttfamily state} can be found by querying {\ttfamily resource=/api/list/state}
+\item {\ttfamily country} can be found by querying {\ttfamily resource=/api/list/country}
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md55}{}\doxyparagraph{GET /api/list/\+:list\+\_\+name}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md55}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/list/medical\_problem\_issue\_list'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md56}{}\doxyparagraph{GET /api/version}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md56}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/version'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md57}{}\doxyparagraph{GET /api/product}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md57}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/product'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md58}{}\doxyparagraph{GET /api/insurance\+\_\+company}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md58}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/insurance\_company'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md59}{}\doxyparagraph{GET /api/insurance\+\_\+type}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md59}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/insurance\_type'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md60}{}\doxyparagraph{POST /api/insurance\+\_\+company}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md60}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/insurance\_company' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}name"{}: "{}Cool Insurance Company"{},}
+\DoxyCodeLine{    "{}attn"{}: null,}
+\DoxyCodeLine{    "{}cms\_id"{}: null,}
+\DoxyCodeLine{    "{}ins\_type\_code"{}: "{}2"{},}
+\DoxyCodeLine{    "{}x12\_receiver\_id"{}: null,}
+\DoxyCodeLine{    "{}x12\_default\_partner\_id"{}: null,}
+\DoxyCodeLine{    "{}alt\_cms\_id"{}: "{}"{},}
+\DoxyCodeLine{    "{}line1"{}: "{}123 Cool Lane"{},}
+\DoxyCodeLine{    "{}line2"{}: "{}Suite 123"{},}
+\DoxyCodeLine{    "{}city"{}: "{}Cooltown"{},}
+\DoxyCodeLine{    "{}state"{}: "{}CA"{},}
+\DoxyCodeLine{    "{}zip"{}: "{}12245"{},}
+\DoxyCodeLine{    "{}country"{}: "{}USA"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+
+
+Notes\+: {\ttfamily ins\+\_\+type\+\_\+code} can be found by inspecting the above route (/api/insurance\+\_\+type).\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md61}{}\doxyparagraph{PUT /api/insurance\+\_\+company/\+:iid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md61}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/insurance\_company/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}name"{}: "{}Super Insurance Company"{},}
+\DoxyCodeLine{    "{}attn"{}: null,}
+\DoxyCodeLine{    "{}cms\_id"{}: null,}
+\DoxyCodeLine{    "{}ins\_type\_code"{}: "{}2"{},}
+\DoxyCodeLine{    "{}x12\_receiver\_id"{}: null,}
+\DoxyCodeLine{    "{}x12\_default\_partner\_id"{}: null,}
+\DoxyCodeLine{    "{}alt\_cms\_id"{}: "{}"{},}
+\DoxyCodeLine{    "{}line1"{}: "{}123 Cool Lane"{},}
+\DoxyCodeLine{    "{}line2"{}: "{}Suite 123"{},}
+\DoxyCodeLine{    "{}city"{}: "{}Cooltown"{},}
+\DoxyCodeLine{    "{}state"{}: "{}CA"{},}
+\DoxyCodeLine{    "{}zip"{}: "{}12245"{},}
+\DoxyCodeLine{    "{}country"{}: "{}USA"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+
+
+Notes\+: {\ttfamily ins\+\_\+type\+\_\+code} can be found by inspecting the above route (/api/insurance\+\_\+type).\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md62}{}\doxyparagraph{GET /api/appointment}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md62}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/appointment'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md63}{}\doxyparagraph{GET /api/appointment/\+:eid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md63}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/appointment/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md64}{}\doxyparagraph{GET /api/patient/\+:pid/appointment}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md64}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/appointment'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md65}{}\doxyparagraph{GET /api/patient/\+:pid/appointment/\+:eid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md65}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/appointment/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md66}{}\doxyparagraph{POST /api/patient/\+:pid/appointment}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md66}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/appointment' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}pc\_eid"{}:"{}1"{},}
+\DoxyCodeLine{    "{}pc\_catid"{}: "{}5"{},}
+\DoxyCodeLine{    "{}pc\_title"{}: "{}Office Visit"{},}
+\DoxyCodeLine{    "{}pc\_duration"{}: "{}900"{},}
+\DoxyCodeLine{    "{}pc\_hometext"{}: "{}Test"{},}
+\DoxyCodeLine{    "{}pc\_apptstatus"{}: "{}-\/"{},}
+\DoxyCodeLine{    "{}pc\_eventDate"{}: "{}2018-\/10-\/19"{},}
+\DoxyCodeLine{    "{}pc\_startTime"{}: "{}09:00"{},}
+\DoxyCodeLine{    "{}pc\_facility"{}: "{}9"{},}
+\DoxyCodeLine{    "{}pc\_billing\_location"{}: "{}10"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md67}{}\doxyparagraph{DELETE /api/patient/\+:pid/appointment/\+:eid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md67}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/appointment/1' -\/d \(\backslash\)}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md68}{}\doxyparagraph{GET /api/patient/\+:pid/document}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md68}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/document\&path=/eye\_module/imaging-\/eye/drawings-\/eye'}
+
+\end{DoxyCode}
+
+
+Note\+: The {\ttfamily path} query string represents the \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} documents paths with two exceptions\+:
+
+
+\begin{DoxyItemize}
+\item Spaces are represented with {\ttfamily \+\_\+}
+\item All characters are lowercase
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md69}{}\doxyparagraph{POST /api/patient/\+:pid/document}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md69}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/document\&path=/eye\_module/imaging-\/eye/drawings-\/eye' \(\backslash\)}
+\DoxyCodeLine{ -\/F document=@/home/someone/Desktop/drawing.jpg}
+
+\end{DoxyCode}
+
+
+Note\+: The {\ttfamily path} query string represents the \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} documents paths with two exceptions\+:
+
+
+\begin{DoxyItemize}
+\item Spaces are represented with {\ttfamily \+\_\+}
+\item All characters are lowercase
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md70}{}\doxyparagraph{GET /api/patient/\+:pid/document/\+:did}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md70}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X GET 'http://localhost:8300/apis/api/patient/1/document/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md71}{}\doxyparagraph{POST /api/patient/\+:pid/message}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md71}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X POST 'http://localhost:8300/apis/api/patient/1/message' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}body"{}: "{}Test 123"{},}
+\DoxyCodeLine{    "{}groupname"{}: "{}Default"{},}
+\DoxyCodeLine{    "{}from"{}: "{}admin"{},}
+\DoxyCodeLine{    "{}to"{}: "{}Matthew"{},}
+\DoxyCodeLine{    "{}title"{}: "{}Other"{},}
+\DoxyCodeLine{    "{}message\_status"{}: "{}New"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+
+
+Notes\+:
+\begin{DoxyItemize}
+\item For {\ttfamily title}, use {\ttfamily resource=/api/list/note\+\_\+type}
+\item For {\ttfamily message\+\_\+type}, use {\ttfamily resource=/api/list/message\+\_\+status}
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md72}{}\doxyparagraph{PUT /api/patient/\+:pid/message/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md72}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X PUT 'http://localhost:8300/apis/api/patient/1/message/1' -\/d \(\backslash\)}
+\DoxyCodeLine{'\{}
+\DoxyCodeLine{    "{}body"{}: "{}Test 456"{},}
+\DoxyCodeLine{    "{}groupname"{}: "{}Default"{},}
+\DoxyCodeLine{    "{}from"{}: "{}Matthew"{},}
+\DoxyCodeLine{    "{}to"{}: "{}admin"{},}
+\DoxyCodeLine{    "{}title"{}: "{}Other"{},}
+\DoxyCodeLine{    "{}message\_status"{}: "{}New"{}}
+\DoxyCodeLine{\}'}
+
+\end{DoxyCode}
+
+
+Notes\+:
+\begin{DoxyItemize}
+\item For {\ttfamily title}, use {\ttfamily resource=/api/list/note\+\_\+type}
+\item For {\ttfamily message\+\_\+type}, use {\ttfamily resource=/api/list/message\+\_\+status}
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md73}{}\doxyparagraph{DELETE /api/patient/\+:pid/message/\+:mid}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md73}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl -\/X DELETE 'http://localhost:8300/apis/api/patient/1/message/1'}
+
+\end{DoxyCode}
+\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md74}{}\doxysubsubsection{Dev Notes}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md74}
+
+\begin{DoxyItemize}
+\item For business logic, make or use the services \href{https://github.com/openemr/openemr/tree/master/services}{\texttt{ here}}
+\item For controller logic, make or use the classes \href{https://github.com/openemr/openemr/tree/master/rest_controllers}{\texttt{ here}}
+\item For routing declarations, use the class \href{https://github.com/openemr/openemr/blob/master/_rest_routes.inc.php}{\texttt{ here}}.
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md75}{}\doxysubsubsection{Project Management}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md75}
+
+\begin{DoxyItemize}
+\item TODO(sherwin)\+: Encounter POST
+\item TODO(?)\+: Prevent {\ttfamily List\+Service} from using {\ttfamily enddate} of {\ttfamily 0000-\/00-\/00} by default
+\item TODO(?)\+: API for fee sheets
+\item TODO(?)\+: API for pharmacies
+\item TODO(?)\+: API for immunizations
+\item TODO(?)\+: API for prescriptions
+\item TODO(?)\+: Drug search API
+\item TODO(?)\+: API for onotes
+\end{DoxyItemize}\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md76}{}\doxysubsubsection{What is that dog drawing?}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md76}
+That is Peppy, an old \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} mascot. Long live Peppy!\hypertarget{md__a_p_i__r_e_a_d_m_e_autotoc_md77}{}\doxysubsubsection{License}\label{md__a_p_i__r_e_a_d_m_e_autotoc_md77}
+\href{../LICENSE}{\texttt{ GNU GPL}} 

@@ -1,0 +1,52 @@
+Thank you for your contribution. \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} (and global healthcare) continues to get better because of people like you!
+
+The maintainers of \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} want to get your pull request in as seamlessly as possible, so please ensure your code is consistent with our \href{http://open-emr.org/wiki/index.php/Development_Policies}{\texttt{ development policies}}.\hypertarget{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md88}{}\doxysubsection{Code Contributions (local development)}\label{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md88}
+You will need a \char`\"{}local\char`\"{} version of \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} to make changes to the source code. The easiest way to do this is with \href{https://hub.docker.com/r/openemr/openemr/}{\texttt{ Docker}}\+:
+
+
+\begin{DoxyEnumerate}
+\item \href{https://github.com/openemr/openemr/fork}{\texttt{ Create your own fork of Open\+EMR}} (you will need a Git\+Hub account) and {\ttfamily git clone} it to your local machine.
+\begin{DoxyItemize}
+\item It\textquotesingle{}s best to also add an {\ttfamily upstream} origin to keep your local fork up to date. \href{https://oneemptymind.wordpress.com/2018/07/11/keeping-a-fork-up-to-date/}{\texttt{ Check out this guide}} for more info.
+\end{DoxyItemize}
+\item {\ttfamily cd openemr} (the directory you cloned the code into)
+\begin{DoxyItemize}
+\item If you haven\textquotesingle{}t already, \href{https://docs.docker.com/install/}{\texttt{ install Docker}} for your system
+\end{DoxyItemize}
+\item Edit {\ttfamily docker-\/compose.\+yml} to use your fork\textquotesingle{}s git url and branch name for {\ttfamily FLEX\+\_\+\+REPOSITORY} and {\ttfamily FLEX\+\_\+\+REPOSITORY\+\_\+\+BRANCH}
+\begin{DoxyItemize}
+\item For example\+: \`{}\`{}\`{} FLEX\+\_\+\+REPOSITORY\+: \href{https://github.com/}{\texttt{ https\+://github.\+com/}}\mbox{[}my\+\_\+user\+\_\+name\mbox{]}/openemr.git FLEX\+\_\+\+REPOSITORY\+\_\+\+BRANCH\+: master \`{}\`{}{\ttfamily }
+\end{DoxyItemize}
+\item {\ttfamily Run}docker-\/compose up\`{} from your command line
+\begin{DoxyItemize}
+\item When the build is done, you\textquotesingle{}ll see the following message\+: \`{}\`{}\`{} openemr\+\_\+1 $\vert$ Love \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}}? You can now support the project via the open collective\+: openemr\+\_\+1 $\vert$ $>$ \href{https://opencollective.com/openemr/donate}{\texttt{ https\+://opencollective.\+com/openemr/donate}} openemr\+\_\+1 $\vert$ openemr\+\_\+1 $\vert$ Starting cron daemon! openemr\+\_\+1 $\vert$ Starting apache! \`{}\`{}{\ttfamily }
+\end{DoxyItemize}
+\item {\ttfamily Navigate to}\href{http://localhost:8300/}{\texttt{ http\+://localhost\+:8300/}}{\ttfamily to login as}admin{\ttfamily . Password is}pass\`{}.
+\item Make changes to any files on your local file system. Most changes will appear after a refresh of the page or i\+Frame you\textquotesingle{}re working on...
+\begin{DoxyItemize}
+\item Note that changes to SCSS files will not automatically show unless the node build process is running. For more info on this, see the README.md in /interface
+\end{DoxyItemize}
+\item If you wish to connect to the sql database, this docker environment provides the following 2 options\+:
+\begin{DoxyItemize}
+\item Navigate to {\ttfamily \href{http://localhost:8310/}{\texttt{ http\+://localhost\+:8310/}}} where you can login into php\+My\+Admin.
+\item Or you can directly connect to port 8320 via your favorite sql tool (Mysql Workbench etc.).
+\end{DoxyItemize}
+\item When you\textquotesingle{}re done, it\textquotesingle{}s best to clean up after yourself with {\ttfamily docker-\/compose down -\/v}
+\begin{DoxyItemize}
+\item If you don\textquotesingle{}t want to build from scratch every time, just use {\ttfamily docker-\/compose down} so your next {\ttfamily docker-\/compose up} will use the cached volumes.
+\end{DoxyItemize}
+\item \href{https://github.com/openemr/openemr/compare}{\texttt{ Submit a PR}} from your fork into {\ttfamily openemr/openemr\#master}!
+\end{DoxyEnumerate}
+
+We look forward to your contribution...
+
+If you do not want to use Docker, you can always install \mbox{\hyperlink{namespace_open_e_m_r}{Open\+EMR}} directly on your local environment. This will require installing additional dependencies for your operating system. For more info see \href{https://open-emr.org/wiki/index.php/OpenEMR_Installation_Guides\#OpenEMR_Development_Versions}{\texttt{ Open\+EMR Development Versions}} on the wiki.\hypertarget{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md89}{}\doxysubsection{Financial contributions}\label{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md89}
+We also welcome financial contributions in full transparency on our \href{https://opencollective.com/openemr}{\texttt{ open collective}}. Anyone can file an expense. If the expense makes sense for the development of the community, it will be \char`\"{}merged\char`\"{} in the ledger of our open collective by the core contributors and the person who filed the expense will be reimbursed.\hypertarget{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md90}{}\doxysubsection{Credits}\label{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md90}
+\hypertarget{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md91}{}\doxysubsubsection{Contributors}\label{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md91}
+Thank you to all the people who have already contributed to openemr! \href{graphs/contributors}{\texttt{ }}\hypertarget{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md92}{}\doxysubsubsection{Backers}\label{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md92}
+Thank you to all our backers! \mbox{[}\href{https://opencollective.com/openemr\#backer}{\texttt{ Become a backer}}\mbox{]}
+
+\href{https://opencollective.com/openemr\#backers}{\texttt{ }}\hypertarget{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md93}{}\doxysubsubsection{Sponsors}\label{md__c_o_n_t_r_i_b_u_t_i_n_g_autotoc_md93}
+Thank you to all our sponsors! (please ask your company to also support this open source project by \href{https://opencollective.com/openemr\#sponsor}{\texttt{ becoming a sponsor}})
+
+\href{https://opencollective.com/openemr/sponsor/0/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/1/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/2/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/3/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/4/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/5/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/6/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/7/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/8/website}{\texttt{ }} \href{https://opencollective.com/openemr/sponsor/9/website}{\texttt{ }} 
